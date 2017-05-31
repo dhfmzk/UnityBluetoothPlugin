@@ -29,14 +29,12 @@ public class BluetoothModel : BtObservable {
     private char endChar = '#';
 
     public List<string> macAddresses = null;
-    private Queue<string> messageQueue = null;
     private StringBuilder rawMessage = null;
 
     void Awake() {
         this.observerList = new List<IBtObserver>();
 
         this.macAddresses = new List<string>();
-        this.messageQueue = new Queue<string>();
         this.rawMessage = new StringBuilder(this.bufferSize);
     }
 
@@ -58,18 +56,11 @@ public class BluetoothModel : BtObservable {
         }
 
         if(startPos != -1 && endPos != -1) {
-            messageQueue.Enqueue(rawMessage.ToString(startPos, endPos-startPos+1));
-            rawMessage.Remove(startPos, endPos-startPos+1);
+            for (int i = 0; i < this.observerList.Count; ++i) {
+                this.observerList[i].OnGetMessage(rawMessage.ToString(startPos, endPos - startPos + 1));
+            }
+            rawMessage.Remove(0, endPos+1);
         }
-        
-        string tempMassege = messageQueue.Dequeue();
-
-        for (int i = 0; i < this.observerList.Count; ++i) {
-            this.observerList[i].OnGetMessage(tempMassege);
-        }
-
-        Debug.Log("Get Packet and Enqueue messageQueue");
-        Debug.Log(rawMessage);
     }
 
     // ========================================
