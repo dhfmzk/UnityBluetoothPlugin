@@ -13,13 +13,13 @@ public interface IBtObserver {
     void OnFoundDevice();
 }
 
-public abstract class BtObservale : MonoBehaviour {
+public abstract class BtObservable : MonoBehaviour {
     protected List<IBtObserver> observerList;
     public abstract void AddObserver(IBtObserver _btObserver);
     public abstract void RemoveObserver(IBtObserver _btObserver);
 }
 
-public class BluetoothModel : BtObservale {
+public class BluetoothModel : BtObservable {
 
     [SerializeField]
     private int bufferSize = 256;
@@ -47,6 +47,7 @@ public class BluetoothModel : BtObservale {
     private void CheckMessageFormat() {
         int startPos = -1;
         int endPos = -1;
+
         for(int i = 0; i < rawMessage.Length; ++i) {
             if(startPos == -1 && rawMessage[i] == this.startChar) {
                 startPos = i;
