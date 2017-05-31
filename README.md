@@ -27,6 +27,10 @@ public class BluetoothController : MonoBehaviour, IBtObserver {
 ```
 3. Now, you can refer to the event method list and design it in detail. :)
 
+Demo
+----
+[![Demo video](https://img.youtube.com/vi/mqlsbmmahVs/0.jpg)](https://www.youtube.com/watch?v=mqlsbmmahVs)
+
 License
 -------
 Copyright 2017 The Android Open Source Project, Inc.
