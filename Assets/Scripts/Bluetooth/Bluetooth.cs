@@ -76,8 +76,12 @@ public class Bluetooth {
 		_activityObject.Call("stopThread");
 	}
 
-	public void showMessage(string mes) {
+	public void ShowMessage(string mes) {
 		_activityObject.Call("showMessage",mes);
 	}
-    
+
+    public byte[] GetPacketData() {
+        return _activityObject.Call<byte[]>("GetPacketData");
+    }
+
 }

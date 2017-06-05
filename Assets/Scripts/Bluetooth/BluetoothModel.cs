@@ -3,11 +3,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public interface IBtObserver {
     void OnStateChanged(string _State);
     void OnSendMessage(string _Message);
-    void OnGetMessage(string _Message);
+    void OnGetMessage(byte[] _packet);
     void OnFoundNoDevice();
     void OnScanFinish();
     void OnFoundDevice();
@@ -20,47 +21,33 @@ public abstract class BtObservable : MonoBehaviour {
 }
 
 public class BluetoothModel : BtObservable {
+    
+    private Bluetooth bluetooth;
 
     [SerializeField]
-    private int bufferSize = 256;
+    private int packetSize = 34;
     [SerializeField]
     private char startChar = '$';
     [SerializeField]
     private char endChar = '#';
 
+    private List<byte> buffer = null;
+    private bool updateQueue = false;
+
     public List<string> macAddresses = null;
     private StringBuilder rawMessage = null;
 
-    void Awake() {
+    private void Awake() {
+        this.bluetooth = Bluetooth.getInstance();
+
         this.observerList = new List<IBtObserver>();
-
         this.macAddresses = new List<string>();
-        this.rawMessage = new StringBuilder(this.bufferSize);
-    }
 
+        this.buffer = new List<byte>();
+    }
+    
     public void clearMacAddresses() {
         macAddresses.Clear();
-    }
-
-    private void CheckMessageFormat() {
-        int startPos = -1;
-        int endPos = -1;
-
-        for(int i = 0; i < rawMessage.Length; ++i) {
-            if(startPos == -1 && rawMessage[i] == this.startChar) {
-                startPos = i;
-            }
-            else if(endPos == -1 && rawMessage[i] == this.endChar) {
-                endPos = i;
-            }
-        }
-
-        if(startPos != -1 && endPos != -1) {
-            for (int i = 0; i < this.observerList.Count; ++i) {
-                this.observerList[i].OnGetMessage(rawMessage.ToString(startPos, endPos - startPos + 1));
-            }
-            rawMessage.Remove(0, endPos+1);
-        }
     }
 
     // ========================================
@@ -99,9 +86,10 @@ public class BluetoothModel : BtObservable {
     }
 
     void OnReadMessage(string _Message) {
-        this.rawMessage.Append(_Message);
-        this.CheckMessageFormat();
-        Debug.Log("On Read Message : " + _Message);
+        byte[] temp = bluetooth.GetPacketData();
+        for (int i = 0; i < this.observerList.Count; ++i) {
+            this.observerList[i].OnGetMessage(temp);
+        }
     }
 
     void OnFoundNoDevice(string _s) {
