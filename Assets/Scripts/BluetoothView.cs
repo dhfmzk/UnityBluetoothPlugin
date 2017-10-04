@@ -14,24 +14,18 @@ public abstract class UiObservable : MonoBehaviour {
     public abstract void AddObserver(IUiObserver _observer);
     public abstract void RemoveObserver(IUiObserver _observer);
     public abstract void GetDeviceList(List<string> _deviceList);
+
+    public abstract void UpdateInfo(Vector3 _position);
 }
 
 public class BluetoothView : UiObservable {
     
-    [SerializeField]
-    private Dropdown deviceDropdown;
+    [SerializeField] private Dropdown deviceDropdown;
+    [SerializeField] private Button searchButton;
+    [SerializeField] private Button connectButton;
 
-    [SerializeField]
-    private Button searchButton;
-
-    [SerializeField]
-    private Button connectButton;
-
-    [SerializeField]
-    public List<Text> infoTexts;
-
-    [SerializeField]
-    private GameObject cube;
+    [SerializeField] public List<Text> infoTexts;
+    [SerializeField] private GameObject character;
 
     private void Awake() {
         this.observerList = new List<IUiObserver>();
@@ -53,21 +47,6 @@ public class BluetoothView : UiObservable {
             }
         });
     }
-	
-	void Update () {
-	
-	}
-
-    public void infoUpdate(Quaternion _rotation, Vector3 _position) {
-        infoTexts[0].text = _rotation.x.ToString();
-        infoTexts[1].text = _rotation.y.ToString();
-        infoTexts[2].text = _rotation.z.ToString();
-
-        infoTexts[3].text = _position.x.ToString();
-        infoTexts[4].text = _position.y.ToString();
-        infoTexts[5].text = _position.z.ToString();
-        cube.transform.rotation = _rotation;
-    }
     
     // ========================================
     //             Pattern Method
@@ -87,4 +66,12 @@ public class BluetoothView : UiObservable {
         this.deviceDropdown.ClearOptions();
         this.deviceDropdown.AddOptions(_deviceList);
     }
+
+    public override void UpdateInfo(Vector3 _position) {
+        infoTexts[1].text = _position.x.ToString();
+        infoTexts[2].text = _position.y.ToString();
+
+        character.transform.position = _position;        
+    }
+
 }
