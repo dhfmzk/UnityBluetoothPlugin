@@ -13,7 +13,7 @@ public abstract class UiObservable : MonoBehaviour {
     protected List<IUiObserver> observerList;
     public abstract void AddObserver(IUiObserver _observer);
     public abstract void RemoveObserver(IUiObserver _observer);
-    public abstract void GetDeviceList(List<string> _deviceList);
+    public abstract void UpdateDeviceList(List<string> _deviceList);
 
     public abstract void UpdateInfo(Vector3 _position);
 }
@@ -62,16 +62,16 @@ public class BluetoothView : UiObservable {
         }
     }
 
-    public override void GetDeviceList(List<string> _deviceList) {
+    public override void UpdateDeviceList(List<string> _deviceList) {
         this.deviceDropdown.ClearOptions();
         this.deviceDropdown.AddOptions(_deviceList);
     }
 
-    public override void UpdateInfo(Vector3 _position) {
-        infoTexts[1].text = _position.x.ToString();
-        infoTexts[2].text = _position.y.ToString();
+    public override void UpdateInfo(Vector3 _velocity) {
+        infoTexts[0].text = _velocity.x.ToString();
+        infoTexts[1].text = _velocity.y.ToString();
 
-        character.transform.position = _position;        
+        character.GetComponent<Rigidbody>().velocity = _velocity;        
     }
 
 }

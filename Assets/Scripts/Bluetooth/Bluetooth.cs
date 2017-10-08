@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-
 public class Bluetooth {
 
     private AndroidJavaClass _plugin;
@@ -19,7 +18,6 @@ public class Bluetooth {
         return instance;
     }
 
-
     // ========================================
     //          Call Android Method
     // ========================================
@@ -27,7 +25,6 @@ public class Bluetooth {
     private void PluginStart() {
 	    _plugin = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
         _activityObject = _plugin.GetStatic<AndroidJavaObject>("currentActivity");
-        Debug.Log(_activityObject);
         _activityObject.Call("StartPlugin");
     }
 
@@ -36,8 +33,7 @@ public class Bluetooth {
     }
 
     public string SearchDevice() {
-       Debug.Log("unity -> android | SearchDevice");
-       return _activityObject.Call<string>("ScanDevice");       
+        return _activityObject.Call<string>("ScanDevice");       
     }
 
     public string GetDeviceConnectedName() {

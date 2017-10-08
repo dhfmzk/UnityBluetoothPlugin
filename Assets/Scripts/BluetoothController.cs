@@ -9,24 +9,15 @@ public class BluetoothController : MonoBehaviour, IBtObserver, IUiObserver {
     
     private Bluetooth bluetooth;
 
-    [SerializeField]
-    private BluetoothModel bluetoothModel;
-    [SerializeField]
-    private BluetoothView bluetoothView;
+    [SerializeField] private BluetoothModel bluetoothModel;
+    [SerializeField] private UiObservable bluetoothView;
 
-    private Quaternion qTemp = new Quaternion();
     private Vector3 pTemp = new Vector3();
 
     private Queue<byte[]> messageQueue = null;
 
-    float qTemp_w = 0.0f;
-    float qTemp_x = 0.0f;
-    float qTemp_y = 0.0f;
-    float qTemp_z = 0.0f;
-
     float sTemp_x = 0.0f;
     float sTemp_y = 0.0f;
-    float sTemp_z = 0.0f;
 
     private void Awake() {
         this.bluetooth = Bluetooth.getInstance();
@@ -41,21 +32,11 @@ public class BluetoothController : MonoBehaviour, IBtObserver, IUiObserver {
     private void Update() {
         if(messageQueue.Count > 0) {
             byte[] temp = messageQueue.Dequeue();
-            
-            this.qTemp_w = BitConverter.ToSingle(temp,  1);
-            this.qTemp_x = BitConverter.ToSingle(temp,  5);
-            this.qTemp_y = BitConverter.ToSingle(temp,  9);
-            this.qTemp_z = BitConverter.ToSingle(temp, 13);
+            Debug.Log(temp[0] + " / " + temp[1] + " / " + temp[2] + " / " + temp[3]);
 
-            this.sTemp_x = BitConverter.ToSingle(temp, 17);
-            this.sTemp_y = BitConverter.ToSingle(temp, 21);
-            this.sTemp_z = BitConverter.ToSingle(temp, 25);
+            pTemp = new Vector3(temp[1], temp[2], 0.0f);
 
-            qTemp.Set(this.qTemp_x, this.qTemp_y, this.qTemp_z, this.qTemp_w);
-            pTemp.Set(this.sTemp_x, this.sTemp_y, this.sTemp_z);
-
-            bluetoothView.infoUpdate(qTemp, pTemp);
-            
+            bluetoothView.UpdateInfo(pTemp);
         }
     }
 
@@ -65,25 +46,27 @@ public class BluetoothController : MonoBehaviour, IBtObserver, IUiObserver {
     public void OnSendMessage(string _Message) {
     }
 
-    public void OnGetMessage(byte[] _packet) {
-        messageQueue.Enqueue(_packet);
+    public void OnReadPacket(byte[] _Packet) {
+        messageQueue.Enqueue(_Packet);
     }
 
     public void OnFoundNoDevice() {
+        // DO SOMETHING
     }
 
     public void OnScanFinish() {
+        // DO SOMETHING
     }
 
     public void OnFoundDevice() {
-        this.bluetoothView.GetDeviceList(this.bluetoothModel.macAddresses);
+        this.bluetoothView.UpdateDeviceList(this.bluetoothModel.macAddresses);
     }
 
     public void OnSearchDevice() {
         this.bluetooth.SearchDevice();
     }
 
-    public void OnConnectDevice(string _device) {
-        this.bluetooth.Connect(_device);
+    public void OnConnectDevice(string _Device) {
+        this.bluetooth.Connect(_Device);
     }
 }
